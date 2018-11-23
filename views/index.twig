@@ -1,0 +1,205 @@
+{% extends 'layout.twig' %}
+
+{% block body %}
+    <h1>{{title}}</h1>
+    <p>Welcome to {{title}}</p>
+    <button onclick="moveTop()">Top</button>
+    <button onclick="moveRight()">Right</button>
+    <button onclick="moveLeft()">Left</button>
+    <button onclick="moveDown()">Down</button>
+    <canvas id="gameCanvas" width="700" height="700" style="border-style: solid"></canvas>
+    <p>HELLO</p>hello
+    <script>
+        let canvas = document.getElementById("gameCanvas");
+        let ctx = canvas.getContext("2d");
+
+
+        let mapManager =
+        {
+            view: {x:500, y:500, w:900, h: 900},
+
+            mapData: null,
+            tLayer: null,
+            xCount: 0,
+            yCount: 0,
+            tSize: {x:64, y:64},
+            mapSize: {x:64, y:64},
+            tilesets: new Array(),
+            imgLoadCount: 0,
+            imgLoaded: false,
+            jsonLoaded: false,
+            parseMap: function(tilesJSON)
+            {
+               this.mapData = JSON.parse(tilesJSON);
+               this.xCount = this.mapData.width;
+               this.yCount = this.mapData.height;
+               this.tSize.x = this.mapData.tilewidth;
+               this.tSize.y = this.mapData.tileheight;
+               this.mapSize.x = this.xCount * this.tSize.x;
+               this.mapSize.y = this.yCount * this.tSize.y;
+
+               for(let i =0; i < this.mapData.tilesets.length; i++)
+               {
+                   let img = new Image();
+                   img.onload = function()
+                   {
+                       mapManager.imgLoadCount++;
+                       if(mapManager.imgLoadCount === mapManager.mapData.tilesets.length)
+                       {
+                           mapManager.imgLoaded = true;
+                       }
+                   };
+
+                   img.src = this.mapData.tilesets[i].image;
+                   let tileset = this.mapData.tilesets[i];
+
+                   let myTileset =
+                   {
+                       firstgid: tileset.firstgid,
+                       image: img,
+                       name: tileset.name,
+                       xCount: Math.floor(tileset.imagewidth/mapManager.tSize.x),
+                       yCount: Math.floor(tileset.imageheight/mapManager.tSize.y)
+                   };
+                   this.tilesets.push(myTileset);
+               }
+               this.jsonLoaded = true;
+            },
+            draw: function (ctx)
+            {
+                if(!mapManager.imgLoaded || !mapManager.jsonLoaded)
+                {
+                    setTimeout(function()
+                    {
+                        mapManager.draw(ctx);
+                    }, 100); //try again by 100ms timeout
+                }
+                else
+                {
+                    if(this.tLayer === null)
+                    {
+                        for(let id = 0; id<this.mapData.layers.length; id++)
+                        {
+                            let layer = this.mapData.layers[id];
+                            if(layer.type === 'tilelayer')
+                            {
+                                this.tLayer = layer;
+                                break;
+                            }
+                        }
+                    }
+
+                    for(let i = 0; i<this.tLayer.data.length; i++)
+                    {
+                        if(this.tLayer.data[i] !== 0)
+                        {
+                            let tile = this.getTile(this.tLayer.data[i]); //TODO SHOULD DEF getTile
+                            let pX = (i%this.xCount)*this.tSize.x;
+                            let pY = Math.floor(i/this.xCount)*this.tSize.y;
+
+                            if(!this.isVisible(pX, pY, this.tSize.x, this.tSize.y))
+                            {
+                                continue;
+                            }
+
+                            pX -= this.view.x;
+                            pY -= this.view.y;
+
+                            ctx.drawImage(tile.img, tile.px, tile.py,
+                                this.tSize.x, this.tSize.y, pX, pY, this.tSize.x, this.tSize.y);
+
+                        }
+                    }
+                }
+            },
+
+            getTileset: function(tileIndex)
+            {
+                for(let i = mapManager.tilesets.length-1; i>=0; i--)
+                {
+                    if(mapManager.tilesets[i].firstgid <= tileIndex)
+                    {
+                        return mapManager.tilesets[i];
+                    }
+
+                }
+                return null;
+            },
+
+            getTile: function(tileIndex)
+            {
+                let tile =
+                {
+                    img: null,
+                    px: 0, py: 0
+                };
+                let tileset = this.getTileset(tileIndex);
+                tile.img = tileset.image;
+                let id = tileIndex - tileset.firstgid;
+                let x = id%tileset.xCount;
+                let y = Math.floor(id/tileset.xCount);
+                tile.px = x * mapManager.tSize.x;
+                tile.py = y * mapManager.tSize.y;
+                return tile;
+            },
+
+            isVisible: function(x,y,width,height)
+            {
+                return !(x + width < this.view.x || y + height < this.view.y || x > this.view.x + this.view.w || y > this.view.y + this.view.h);
+            },
+
+            loadMap: function(path)
+            {
+                let request = new XMLHttpRequest();
+                request.onreadystatechange = function()
+                {
+                    if(request.readyState === 4 && request.status === 200)
+                    {
+                        mapManager.parseMap(request.responseText);
+                    }
+                };
+                request.open("GET", path, true);
+                request.send();
+            }
+
+
+        };
+
+        mapManager.loadMap('/levels/level1test.json');
+        mapManager.draw(ctx);
+
+        function moveDown()
+        {
+            mapManager.view.y -= 10;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            mapManager.draw(ctx);
+        }
+
+        function moveTop()
+        {
+            mapManager.view.y += 10;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            mapManager.draw(ctx);
+        }
+
+        function moveRight()
+        {
+            mapManager.view.x += 10;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            mapManager.draw(ctx);
+        }
+
+        function moveLeft()
+        {
+            mapManager.view.x -= 10;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            mapManager.draw(ctx);
+        }
+
+
+
+
+
+    </script>
+
+{% endblock %}
