@@ -34,14 +34,20 @@ class Player extends Entity
         spriteManager.drawSprite(ctx, mapManager, "fridge_right", this.pos_x, this.pos_y);
     }
 
-    update()
+    update(physicManager, mapManager)
     {
         // update in cycle
+        physicManager.update(this, mapManager)
     }
 
     onTouchEntity(obj)
     {
         // collide entities handle
+        if(obj.name.match(/start[\d]/))
+        {
+            this.lifetime += 50;
+            obj.kill();
+        }
     }
 
     kill()
@@ -49,37 +55,37 @@ class Player extends Entity
         // destroy this
     }
 
-    fire()
+    fire(gameManager)
     {
         // attack
-        let rocketSize_x = 32;
-        let rocketSize_y = 32;
-        let rocketMove_x = this.move_x;
-        let rocketMove_y = this.move_y;
-        let rocketName = "rocket" + (++gameManager.fireNum);
-        let rocket = new Rocket(rocketName,rocketMove_x,rocketMove_y,0,0,rocketSize_x,rocketSize_y);
+        let fireballSize_x = 32;
+        let fireballSize_y = 32;
+        let fireballMove_x = this.move_x;
+        let fireballMove_y = this.move_y;
+        let fireballName = "fireball" + (++gameManager.fireNum);
+        let fireball = new Fireball(fireballName,fireballMove_x,fireballMove_y,0,0,fireballSize_x,fireballSize_y);
         switch(this.move_x + 2*this.move_y)
         {
             case -1:
-                rocket.pos_x = this.pos_x-rocket.size_x;
-                rocket.pos_y = this.pos_y;
+                fireball.pos_x = this.pos_x-fireball.size_x;
+                fireball.pos_y = this.pos_y;
                 break;
             case 1:
-                rocket.pos_x = this.pos_x+this.size_x;
-                rocket.pos_y = this.pos_y;
+                fireball.pos_x = this.pos_x+this.size_x;
+                fireball.pos_y = this.pos_y;
                 break;
             case -2:
-                rocket.pos_x = this.pos_x;
-                rocket.pos_y = this.pos_y-rocket.size_y;
+                fireball.pos_x = this.pos_x;
+                fireball.pos_y = this.pos_y-fireball.size_y;
                 break;
             case 2:
-                rocket.pos_x = this.pos_x;
-                rocket.pos_y = this.pos_y+this.size_y;
+                fireball.pos_x = this.pos_x;
+                fireball.pos_y = this.pos_y+this.size_y;
                 break;
             default:
                 return;
         }
-        gameManager.entities.push(rocket);
+        gameManager.entities.push(fireball);
 
     }
 }
@@ -103,9 +109,10 @@ class Tank extends Entity
         spriteManager.drawSprite(ctx, mapManager, "fridge_left", this.pos_x, this.pos_y);
     }
 
-    update()
+    update(physicManager, mapManager)
     {
         // update in cycle
+        physicManager.update(this, mapManager)
     }
 
     onTouchEntity(obj)
@@ -124,7 +131,7 @@ class Tank extends Entity
     }
 }
 
-class Rocket extends Entity
+class Fireball extends Entity
 {
     name = "";
     move_x = 0;
@@ -145,18 +152,27 @@ class Rocket extends Entity
         spriteManager.drawSprite(ctx, mapManager, "fireball", this.pos_x, this.pos_y);
     }
 
-    update()
+    update(physicManager, mapManager)
     {
         // update in cycle
+        physicManager.update(this, mapManager)
     }
 
     onTouchEntity(obj)
     {
+        if(obj.name.match(/enemy[\d*]/) ||
+           obj.name.match(/player/)     ||
+           obj.name.match(/fireball[\d*]/))
+        {
+            obj.kill();
+        }
+        this.kill();
         // collide entities handle
     }
 
     onTouchMap(idx)
     {
+        this.kill();
         // collide map handle
     }
 
@@ -166,7 +182,7 @@ class Rocket extends Entity
     }
 }
 
-class Bonus extends Entity
+class BonusCola extends Entity
 {
     draw(ctx, spriteManager, mapManager)
     {
