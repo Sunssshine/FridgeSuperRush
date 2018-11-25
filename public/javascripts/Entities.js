@@ -28,9 +28,10 @@ class Player extends Entity
         this.lifetime = lifetime;
     }
 
-    draw(ctx)
+    draw(ctx, spriteManager, mapManager)
     {
         // draw object
+        spriteManager.drawSprite(ctx, mapManager, "fridge_right", this.pos_x, this.pos_y);
     }
 
     update()
@@ -96,9 +97,10 @@ class Tank extends Entity
         this.lifetime = lifetime;
     }
 
-    draw(ctx)
+    draw(ctx, spriteManager, mapManager)
     {
         // draw object
+        spriteManager.drawSprite(ctx, mapManager, "fridge_left", this.pos_x, this.pos_y);
     }
 
     update()
@@ -137,9 +139,10 @@ class Rocket extends Entity
         this.move_y = move_y;
     }
 
-    draw(ctx)
+    draw(ctx, spriteManager, mapManager)
     {
         // draw object
+        spriteManager.drawSprite(ctx, mapManager, "fireball", this.pos_x, this.pos_y);
     }
 
     update()
@@ -165,9 +168,10 @@ class Rocket extends Entity
 
 class Bonus extends Entity
 {
-    draw(ctx)
+    draw(ctx, spriteManager, mapManager)
     {
         // draw object
+        spriteManager.drawSprite(ctx, mapManager, "bonus_cola", this.pos_x, this.pos_y);
     }
 
     kill()
