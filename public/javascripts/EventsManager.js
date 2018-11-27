@@ -2,9 +2,11 @@ class EventsManager
 {
     bind = new Array();
     action = new Array();
+    gameManager = null;
 
-    constructor(canvas)
+    constructor(canvas, gameManager)
     {
+        this.gameManager = gameManager;
         this.bind[87]='up';
         this.bind[83]='down';
         this.bind[65]='left';
@@ -44,18 +46,20 @@ class EventsManager
 
     onKeyDown(event, self)
     {
-        let willDo = self.bind[event.key];
+        let willDo = self.bind[event.keyCode];
         if(willDo)
         {
+            console.log(event.keyCode + ' down ')
             self.action[willDo] = true;
         }
     }
 
     onKeyUp(event, self)
     {
-        let willDo = self.bind[event.key];
+        let willDo = self.bind[event.keyCode];
         if(willDo)
         {
+            console.log(event.keyCode + ' up ')
             self.action[willDo] = false;
         }
     }

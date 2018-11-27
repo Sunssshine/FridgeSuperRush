@@ -4,9 +4,11 @@ class SpriteManager
     sprites = new Array();
     imgLoaded = false;
     jsonLoaded = false;
+    gameManager = null;
 
-    constructor(atlasJSON, atlasImg)
+    constructor(atlasJSON, atlasImg, gameManager)
     {
+        this.gameManager = gameManager;
         let self = this;
         let request = new XMLHttpRequest();
         request.onreadystatechange = function()
@@ -49,25 +51,25 @@ class SpriteManager
         this.jsonLoaded = true;
     }
 
-    drawSprite(ctx, mapManager, name, x, y)
+    drawSprite(name, x, y)
     {
         let self = this;
         if(!self.imgLoaded || !self.jsonLoaded)
         {
             setTimeout(function()
             {
-                self.drawSprite(ctx, name, x, y);
+                self.drawSprite(self.gameManager.ctx, name, x, y);
             }, 100);
         }
         else
         {
             let sprite = self.getSprite(name);
-            if(!mapManager.isVisible(x, y, sprite.w, sprite.h))
+            if(!self.gameManager.mapManager.isVisible(x, y, sprite.w, sprite.h))
                 return;
 
-            x-=mapManager.view.x;
-            y-=mapManager.view.y;
-            ctx.drawImage(self.image, sprite.x, sprite.y, sprite.w, sprite.h, x, y, sprite.w, sprite.h)
+            x-=self.gameManager.mapManager.view.x;
+            y-=self.gameManager.mapManager.view.y;
+            self.gameManager.ctx.drawImage(self.image, sprite.x, sprite.y, sprite.w, sprite.h, x, y, sprite.w, sprite.h)
         }
     }
 

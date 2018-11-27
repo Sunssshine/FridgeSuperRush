@@ -1,6 +1,6 @@
 class MapManager
 {
-    view = {x:500, y:500, w:900, h: 900};
+    view = {x:0, y:0, w:900, h: 900};
 
     mapData = null;
     tLayer = null;
@@ -12,9 +12,11 @@ class MapManager
     imgLoadCount = 0;
     imgLoaded = false;
     jsonLoaded = false;
+    gameManager = null;
 
-    constructor(path)
+    constructor(path, gameManager)
     {
+        this.gameManager = gameManager;
         let self = this;
         let request = new XMLHttpRequest();
         request.onreadystatechange = function()
@@ -91,7 +93,7 @@ class MapManager
                     }
                 }
             }
-
+            ctx.clearRect(0,0,900,900);
             for(let i = 0; i<this.tLayer.data.length; i++)
             {
                 if(this.tLayer.data[i] !== 0)
@@ -107,6 +109,7 @@ class MapManager
 
                     pX -= this.view.x;
                     pY -= this.view.y;
+
 
                     ctx.drawImage(tile.img, tile.px, tile.py,
                         this.tSize.x, this.tSize.y, pX, pY, this.tSize.x, this.tSize.y);
@@ -146,23 +149,12 @@ class MapManager
                     for(let i = 0; i<entities.objects.length; i++)
                     {
                         let e = entities.objects[i];
-                        try
+                        let obj = this.gameManager.entityFactory(e.type, e.name, e.x, e.y);
+
+                        this.gameManager.entities.push(obj);
+                        if (obj.name === "player")
                         {
-                            let obj = Object.create(gameManager.factory[e.type]);
-                            obj.name = e.name;
-                            obj.pos_x = e.x;
-                            obj.pos.y = e.y;
-                            obj.size_x = e.width;
-                            obj.size_y = e.height;
-                            gameManager.entities.push(obj);
-                            if (obj.name === "player")
-                            {
-                                gameManager.initPlayer(obj);
-                            }
-                        }
-                        catch(ex)
-                        {
-                            console.log(`Error while creating: ["${e.gid}"], ${e.type}, ${ex}`);
+                            this.gameManager.initPlayer(obj);
                         }
                     }
                 }

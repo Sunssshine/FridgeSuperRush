@@ -1,49 +1,59 @@
 class Entity
 {
+    name = '';
+    type = '';
     pos_x = 0;
     pos_y = 0;
-    size_x = 0;
-    size_y = 0;
+    gameManager = null;
 
-    constructor(pos_x, pos_y, size_x, size_y)
+    constructor(type, name, pos_x, pos_y, gameManager)
     {
+        this.gameManager = gameManager;
+        this.type = type;
+        this.name = name;
         this.pos_x = pos_x;
         this.pos_y = pos_y;
-        this.size_x = size_x;
-        this.size_y = size_y;
         // empty for while
     }
 }
 
 class Player extends Entity
 {
+    fireBlock = false;
+    impulse = 0;
     lifetime = 0;
     move_x = 0;
     move_y = 0;
+    size_x = 0;
+    size_y = 0;
     speed = 1;
 
-    constructor(lifetime, pos_x, pos_y, size_x, size_y)
+    constructor(lifetime, type, name, pos_x, pos_y, gameManager)
     {
-        super(pos_x, pos_y, size_x, size_y);
+        super(type, name, pos_x, pos_y, gameManager);
+        let sprite = this.gameManager.spriteManager.getSprite(this.type);
+        this.size_x = sprite.w;
+        this.size_y = sprite.h;
         this.lifetime = lifetime;
     }
 
-    draw(ctx, spriteManager, mapManager)
+    draw()
     {
         // draw object
-        spriteManager.drawSprite(ctx, mapManager, "fridge_right", this.pos_x, this.pos_y);
+        this.gameManager.spriteManager.drawSprite(this.type,
+            this.pos_x, this.pos_y);
     }
 
-    update(physicManager, mapManager)
+    update()
     {
         // update in cycle
-        physicManager.update(this, mapManager)
+        this.gameManager.physicManager.update(this)
     }
 
     onTouchEntity(obj)
     {
         // collide entities handle
-        if(obj.name.match(/start[\d]/))
+        if(obj.type === "BonusCola")
         {
             this.lifetime += 50;
             obj.kill();
@@ -53,39 +63,52 @@ class Player extends Entity
     kill()
     {
         // destroy this
+        this.gameManager.kill(this);
     }
 
-    fire(gameManager)
+    fire()
     {
         // attack
-        let fireballSize_x = 32;
-        let fireballSize_y = 32;
+        if(this.fireBlock)
+            return;
+
         let fireballMove_x = this.move_x;
         let fireballMove_y = this.move_y;
-        let fireballName = "fireball" + (++gameManager.fireNum);
-        let fireball = new Fireball(fireballName,fireballMove_x,fireballMove_y,0,0,fireballSize_x,fireballSize_y);
+        let fireballName = "fireball" + (++this.gameManager.fireNum);
+        let fireball = new Fireball("Fireball", fireballName, fireballMove_x, fireballMove_y, 0, 0, this.gameManager);
         switch(this.move_x + 2*this.move_y)
         {
             case -1:
                 fireball.pos_x = this.pos_x-fireball.size_x;
-                fireball.pos_y = this.pos_y;
+                fireball.pos_y = this.pos_y+fireball.size_y/2;
                 break;
             case 1:
                 fireball.pos_x = this.pos_x+this.size_x;
-                fireball.pos_y = this.pos_y;
+                fireball.pos_y = this.pos_y+fireball.size_y/2;
                 break;
             case -2:
-                fireball.pos_x = this.pos_x;
-                fireball.pos_y = this.pos_y-fireball.size_y;
+                console.log("WHY");
+                fireball.pos_x = this.pos_x+fireball.size_x;
+                fireball.pos_y = this.pos_y-fireball.size_y+2;
                 break;
             case 2:
-                fireball.pos_x = this.pos_x;
+                fireball.pos_x = this.pos_x+fireball.size_x;
                 fireball.pos_y = this.pos_y+this.size_y;
                 break;
             default:
                 return;
         }
-        gameManager.entities.push(fireball);
+        this.fireBlock = true;
+        let self = this;
+        setTimeout(
+            function()
+            {
+               self.fireBlock = false;
+            },
+            1500
+        );
+        console.log(fireball);
+        this.gameManager.entities.push(fireball);
 
     }
 }
@@ -94,25 +117,29 @@ class Tank extends Entity
 {
     lifetime = 0;
     move_x = 0;
-    move_y = -1;
+    move_y = 0;
     speed = 1;
 
-    constructor(lifetime, pos_x, pos_y, size_x, size_y)
+    constructor(lifetime, type, name, pos_x, pos_y, gameManager)
     {
-        super(pos_x, pos_y, size_x, size_y);
+        super(type, name, pos_x, pos_y, gameManager);
+        let sprite = this.gameManager.spriteManager.getSprite(this.type);
+        this.size_x = sprite.w;
+        this.size_y = sprite.h;
         this.lifetime = lifetime;
     }
 
-    draw(ctx, spriteManager, mapManager)
+    draw()
     {
         // draw object
-        spriteManager.drawSprite(ctx, mapManager, "fridge_left", this.pos_x, this.pos_y);
+        this.gameManager.spriteManager.drawSprite(this.type,
+            this.pos_x, this.pos_y);
     }
 
-    update(physicManager, mapManager)
+    update()
     {
         // update in cycle
-        physicManager.update(this, mapManager)
+        this.gameManager.physicManager.update(this)
     }
 
     onTouchEntity(obj)
@@ -123,6 +150,7 @@ class Tank extends Entity
     kill()
     {
         // destroy this
+        this.gameManager.kill(this);
     }
 
     fire()
@@ -133,36 +161,39 @@ class Tank extends Entity
 
 class Fireball extends Entity
 {
-    name = "";
     move_x = 0;
     move_y = 0;
     speed = 4;
 
-    constructor(name, move_x, move_y, pos_x, pos_y, size_x, size_y)
+    constructor(name, type, move_x, move_y, pos_x, pos_y, gameManager)
     {
-        super(pos_x, pos_y, size_x, size_y);
-        this.name = name;
+        super(name, type, pos_x, pos_y, gameManager);
+        let sprite = this.gameManager.spriteManager.getSprite(this.type);
+        this.size_x = sprite.w;
+        this.size_y = sprite.h;
         this.move_x = move_x;
         this.move_y = move_y;
     }
 
-    draw(ctx, spriteManager, mapManager)
+    draw()
     {
         // draw object
-        spriteManager.drawSprite(ctx, mapManager, "fireball", this.pos_x, this.pos_y);
+
+        this.gameManager.spriteManager.drawSprite(this.type,
+            this.pos_x, this.pos_y);
     }
 
-    update(physicManager, mapManager)
+    update()
     {
         // update in cycle
-        physicManager.update(this, mapManager)
+        this.gameManager.physicManager.update(this)
     }
 
     onTouchEntity(obj)
     {
-        if(obj.name.match(/enemy[\d*]/) ||
-           obj.name.match(/player/)     ||
-           obj.name.match(/fireball[\d*]/))
+        if(obj.type === "Enemy" ||
+           obj.type === "Player"||
+           obj.type === "Fireball")
         {
             obj.kill();
         }
@@ -178,20 +209,41 @@ class Fireball extends Entity
 
     kill()
     {
-        // destroy this
+        this.gameManager.kill(this);
     }
 }
 
 class BonusCola extends Entity
 {
-    draw(ctx, spriteManager, mapManager)
+    speed = 1;
+    move_x = 0;
+    move_y = 0;
+
+    constructor(lifetime, type, name, pos_x, pos_y, gameManager)
+    {
+        super(type, name, pos_x, pos_y, gameManager);
+        let sprite = this.gameManager.spriteManager.getSprite(this.type);
+        this.size_x = sprite.w;
+        this.size_y = sprite.h;
+        // empty for while
+    }
+
+    draw()
     {
         // draw object
-        spriteManager.drawSprite(ctx, mapManager, "bonus_cola", this.pos_x, this.pos_y);
+        this.gameManager.spriteManager.drawSprite(this.type,
+            this.pos_x, this.pos_y);
+    }
+
+    update()
+    {
+        // update in cycle
+        this.gameManager.physicManager.update(this)
     }
 
     kill()
     {
         // destroy this
+        this.gameManager.kill(this);
     }
 }

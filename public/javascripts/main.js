@@ -1,10 +1,10 @@
 let canvas = document.getElementById("gameCanvas");
-let ctx = canvas.getContext("2d");
 
-mapManager = new MapManager('/levels/level1test.json');
-spriteManager = new SpriteManager('/sprites/sprites.json', '/images/spritesheet.png');
+gameManager = new GameManager(
+    canvas,
+    '/levels/level1.json', // level tilemap path
+    '/sprites/sprites.json',   // entity sprites description path
+    '/images/spritesheet.png');// entity sprites packed image path
 
-mapManager.draw(ctx);
-
-let hello = new Player(100);
-console.log(hello);
+// let hello = new Player(100);
+// (hello);
