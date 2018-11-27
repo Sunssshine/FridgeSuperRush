@@ -70,6 +70,31 @@ class Player extends Entity
         }
     }
 
+    onTouchMap(tileset)
+    {
+        const LAVA_TILE = 3023;
+        const EXIT_TILE = 3361;
+        if(tileset === LAVA_TILE)
+        {
+            this.kill();
+        }
+        if(tileset === EXIT_TILE)
+        {
+            // END LEVEL
+            // TOGGLE NEXT LEVEL
+            this.gameManager.goToNextLevel();
+            this.kill()
+        }
+
+        if(tileset === 2824)
+        {
+            // END LEVEL
+            // TOGGLE NEXT LEVEL
+            this.gameManager.goToNextLevel();
+            this.kill()
+        }
+    }
+
     kill()
     {
         // destroy this

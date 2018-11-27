@@ -1,41 +1,48 @@
 class PhysicManager
 {
     gameManager = null;
+    EMPTY_SPACE = null;
 
-    constructor(gameManager)
+    constructor(gameManager, empty_space_tile)
     {
         this.gameManager = gameManager;
+        this.EMPTY_SPACE = empty_space_tile;
     }
 
     update(obj)
     {
-        const EMPTY_SPACE = 3079;
         let isInAirLeft = this.gameManager.mapManager.getTilesetIdx(obj.pos_x, obj.pos_y+64+Math.abs(obj.impulse));
         let isInAirRight = this.gameManager.mapManager.getTilesetIdx(obj.pos_x+64, obj.pos_y+64+Math.abs(obj.impulse));
         let entityUnder = this.entityAtXY(obj, obj.pos_x, obj.pos_y);
-        if(((isInAirLeft === EMPTY_SPACE) && (isInAirRight === EMPTY_SPACE)) && (obj.type !== "Fireball") && (!entityUnder))
+
+        if((isInAirLeft === this.EMPTY_SPACE) && (isInAirRight === this.EMPTY_SPACE) )
         {
-                console.log(entityUnder);
-                console.log(obj);
-                console.log('HELLO')
+            if((obj.type !== "Fireball") && (!entityUnder))
                 obj.impulse += 0.3;
         }
         else
         {
-            //console.log('DAROVA')
-                //console.log(obj);
-                console.log(obj.name, obj.impulse)
-                if (obj.impulse > 0)
+            if(isInAirLeft === isInAirRight && obj.onTouchMap !== undefined)
+            {
+                if(obj.type !== "Fireball")
                 {
-                    obj.impulse = 0;
+                    console.log('not fireball')
+                    obj.onTouchMap(isInAirLeft);
                 }
-                console.log('POKA')
+            }
+            if (obj.impulse !== undefined && obj.impulse > 0)
+            {
+
+                obj.impulse = 0;
+            }
+
         }
 
         let multiplierY = obj.speed;
 
         if(obj.impulse !== undefined)
         {
+
             if(obj.impulse > 10)
                 obj.impulse = 10;
 
@@ -43,7 +50,7 @@ class PhysicManager
             {
                 multiplierY = obj.impulse;
                 obj.move_y = 1;
-                console.log(obj)
+                //console.log(obj)
                 //obj.impulse -= 0.3;
             }
 
@@ -51,15 +58,18 @@ class PhysicManager
             {
                 multiplierY = -obj.impulse;
                 obj.move_y = -1;
-                console.log(obj);
+                //console.log(obj);
                 obj.impulse += 0.3;
             }
         }
 
         if (obj.move_x === 0 && obj.move_y === 0)
         {
+
             return "stop";
         }
+
+
 
         let newX = obj.pos_x + Math.floor(obj.move_x * obj.speed);
         let newY = obj.pos_y + Math.floor(obj.move_y * multiplierY);
@@ -84,19 +94,19 @@ class PhysicManager
         let tileset = this.gameManager.mapManager.getTilesetIdx(newX, newY);
         let entity = this.entityAtXY(obj, newX, newY);
 
-        if(tileset === EMPTY_SPACE)
+        if(tileset === this.EMPTY_SPACE)
         {
-            tileset = this.gameManager.mapManager.getTilesetIdx(newX + obj.size_x-1 + deltaSize_x, newY + obj.size_y-1 + deltaSize_y);
+            tileset = this.gameManager.mapManager.getTilesetIdx(newX + obj.size_x + deltaSize_x, newY + obj.size_y + deltaSize_y);
         }
 
-        if(tileset === EMPTY_SPACE)
+        if(tileset === this.EMPTY_SPACE)
         {
-            tileset = this.gameManager.mapManager.getTilesetIdx(newX + deltaSize_x, newY + obj.size_y-1 + deltaSize_y);
+            tileset = this.gameManager.mapManager.getTilesetIdx(newX + deltaSize_x, newY + obj.size_y + deltaSize_y);
         }
 
-        if(tileset === EMPTY_SPACE)
+        if(tileset === this.EMPTY_SPACE)
         {
-            tileset = this.gameManager.mapManager.getTilesetIdx(newX + obj.size_x-1 + deltaSize_x, newY  + deltaSize_y);
+            tileset = this.gameManager.mapManager.getTilesetIdx(newX + obj.size_x + deltaSize_x, newY  + deltaSize_y);
         }
 
         //console.log(obj.name)
@@ -107,13 +117,16 @@ class PhysicManager
             //console.log('entity forward')
             //console.log(entity);
         }
-        if(tileset !== EMPTY_SPACE && obj.onTouchMap)
+
+
+        if(tileset !== this.EMPTY_SPACE && obj.onTouchMap)
         {
-            //console.log('map forward')
+            //conso
+            console.log('map forward')
             obj.onTouchMap(tileset);
         }
 
-        if(tileset === EMPTY_SPACE && entity === null)
+        if(tileset === this.EMPTY_SPACE && entity === null)
         {
             //console.log('nothing forward')
             //console.log(obj)

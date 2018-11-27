@@ -17,6 +17,8 @@ class MapManager
     constructor(path, gameManager)
     {
         this.gameManager = gameManager;
+        this.view.h = this.gameManager.canvas.height;
+        this.view.w = this.gameManager.canvas.width;
         let self = this;
         let request = new XMLHttpRequest();
         request.onreadystatechange = function()

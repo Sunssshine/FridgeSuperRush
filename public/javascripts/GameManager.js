@@ -1,6 +1,5 @@
 class GameManager
 {
-    factory = {};
     entities = [];
     fireNum = 0;
     player = null;
@@ -13,15 +12,24 @@ class GameManager
     canvas = null;
     ctx = null;
 
-    constructor(canvas, levelPath, spritePath, spritesheetPath)
+    currentLevel = 0;
+    levels = [];
+
+    constructor(canvas, levelPaths, spritePath, spritesheetPath)
     {
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
-        this.mapManager = new MapManager(levelPath, this);
+
+        for(let i = 0; i<levelPaths.length; i++)
+        {
+            this.levels.push(levelPaths[i]);
+        }
+
+        this.mapManager = new MapManager(this.levels[this.currentLevel], this);
         this.spriteManager = new SpriteManager(spritePath, spritesheetPath, this);
         this.mapManager.parseEntities();
         this.eventsManager = new EventsManager(canvas, this);
-        this.physicManager = new PhysicManager(this);
+        this.physicManager = new PhysicManager(this, 3079);
 
         // this.factory['Player'] = new Player(100, 10, 10,  this);
         // this.factory['Tank'] = new Tank(100, 10, 10,  this);
@@ -99,7 +107,7 @@ class GameManager
             if (this.player.impulse === 0)
             {
                 //console.log('HEREHEREHEREHERE')
-                this.player.impulse = -14;
+                this.player.impulse = -20;
             }
         }
 
@@ -168,6 +176,21 @@ class GameManager
         setInterval(function()
         {
             self.update();
-        },20);
+        },10);
+    }
+
+    goToNextLevel()
+    {
+        this.entities = [];
+        this.player = null;
+        this.currentLevel++;
+        if(this.currentLevel === this.levels.length)
+            return;
+        this.mapManager = new MapManager(this.levels[this.currentLevel], this);
+        this.mapManager.parseEntities();
+        if(this.currentLevel === 2)
+        {
+            this.physicManager.EMPTY_SPACE = 2960;
+        }
     }
 }
