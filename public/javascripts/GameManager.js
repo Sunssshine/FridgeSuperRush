@@ -107,7 +107,7 @@ class GameManager
             if (this.player.impulse === 0)
             {
                 //console.log('HEREHEREHEREHERE')
-                this.player.impulse = -20;
+                this.player.impulse = -10;
             }
         }
 

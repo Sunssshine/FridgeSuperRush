@@ -11,8 +11,8 @@ class PhysicManager
 
     update(obj)
     {
-        let isInAirLeft = this.gameManager.mapManager.getTilesetIdx(obj.pos_x, obj.pos_y+64+Math.abs(obj.impulse));
-        let isInAirRight = this.gameManager.mapManager.getTilesetIdx(obj.pos_x+64, obj.pos_y+64+Math.abs(obj.impulse));
+        let isInAirLeft = this.gameManager.mapManager.getTilesetIdx(obj.pos_x, obj.pos_y+obj.size_y+Math.abs(obj.impulse));
+        let isInAirRight = this.gameManager.mapManager.getTilesetIdx(obj.pos_x+obj.size_x, obj.pos_y+obj.size_y+Math.abs(obj.impulse));
         let entityUnder = this.entityAtXY(obj, obj.pos_x, obj.pos_y);
 
         if((isInAirLeft === this.EMPTY_SPACE) && (isInAirRight === this.EMPTY_SPACE) )
@@ -26,7 +26,7 @@ class PhysicManager
             {
                 if(obj.type !== "Fireball")
                 {
-                    console.log('not fireball')
+                    //console.log('not fireball')
                     obj.onTouchMap(isInAirLeft);
                 }
             }
@@ -96,17 +96,21 @@ class PhysicManager
 
         if(tileset === this.EMPTY_SPACE)
         {
-            tileset = this.gameManager.mapManager.getTilesetIdx(newX + obj.size_x + deltaSize_x, newY + obj.size_y + deltaSize_y);
+            tileset = this.gameManager.mapManager.getTilesetIdx(newX + obj.size_x, newY + obj.size_y);
+            if(tileset !== this.EMPTY_SPACE && obj.type === 'Player')
+                console.log('map right')
         }
 
         if(tileset === this.EMPTY_SPACE)
         {
-            tileset = this.gameManager.mapManager.getTilesetIdx(newX + deltaSize_x, newY + obj.size_y + deltaSize_y);
+            tileset = this.gameManager.mapManager.getTilesetIdx(newX, newY + obj.size_y);
+            if(tileset !== this.EMPTY_SPACE && obj.type === 'Player')
+                console.log('map left')
         }
 
         if(tileset === this.EMPTY_SPACE)
         {
-            tileset = this.gameManager.mapManager.getTilesetIdx(newX + obj.size_x + deltaSize_x, newY  + deltaSize_y);
+            tileset = this.gameManager.mapManager.getTilesetIdx(newX + obj.size_x, newY);
         }
 
         //console.log(obj.name)
@@ -122,7 +126,7 @@ class PhysicManager
         if(tileset !== this.EMPTY_SPACE && obj.onTouchMap)
         {
             //conso
-            console.log('map forward')
+            //console.log('map forward')
             obj.onTouchMap(tileset);
         }
 
