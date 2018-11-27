@@ -57,7 +57,7 @@ class GameManager
     entityFactory(type, name, x, y)
     {
         let resultEntity = null;
-        console.log(type,name,x,y)
+        //console.log(type,name,x,y)
         switch(type)
         {
             case "Player":
@@ -83,6 +83,8 @@ class GameManager
 
     update()
     {
+        // console.log(this.entities)
+
         if(this.player === null)
         {
             return;
@@ -92,10 +94,17 @@ class GameManager
         this.player.move_y = 0;
 
         if(this.eventsManager.action["up"])
-            this.player.move_y = -1;
+        {
+            //console.log(this.player)
+            if (this.player.impulse === 0)
+            {
+                //console.log('HEREHEREHEREHERE')
+                this.player.impulse = -14;
+            }
+        }
 
-        if(this.eventsManager.action["down"])
-            this.player.move_y = 1;
+        //if(this.eventsManager.action["down"])
+        //    this.player.move_y = 1;
 
         if(this.eventsManager.action["left"])
             this.player.move_x = -1;
@@ -112,18 +121,18 @@ class GameManager
         {
             try {
                 event.update();
-                if(event.type === 'enemy')
+                if(event.type === 'Enemy')
                 {
                     //console.log('THAT WAS ME DIO')
                     event.move_y = 0;
                 }
-                if(event.type === 'bonus_cola')
+                if(event.type === 'BonusCola')
                 {
                     //console.log('I AM COLA BONUS YA YA')
                     event.move_y = 0;
                 }
             } catch(ex) {
-                console.log(ex)
+                //console.log(ex)
             }
         });
 
@@ -159,6 +168,6 @@ class GameManager
         setInterval(function()
         {
             self.update();
-        },30);
+        },20);
     }
 }

@@ -9,35 +9,52 @@ class PhysicManager
 
     update(obj)
     {
-        const EMPTY_SPACE = 2481;
-        let isInAir = this.gameManager.mapManager.getTilesetIdx(obj.pos_x, obj.pos_y+64);
-
-        if((isInAir === EMPTY_SPACE) && (obj.type !== "Fireball"))
+        const EMPTY_SPACE = 3079;
+        let isInAirLeft = this.gameManager.mapManager.getTilesetIdx(obj.pos_x, obj.pos_y+64+Math.abs(obj.impulse));
+        let isInAirRight = this.gameManager.mapManager.getTilesetIdx(obj.pos_x+64, obj.pos_y+64+Math.abs(obj.impulse));
+        let entityUnder = this.entityAtXY(obj, obj.pos_x, obj.pos_y);
+        if(((isInAirLeft === EMPTY_SPACE) && (isInAirRight === EMPTY_SPACE)) && (obj.type !== "Fireball") && (!entityUnder))
         {
-            if(this.gameManager.mapManager.getTilesetIdx(obj.pos_x+64, obj.pos_y+64) === EMPTY_SPACE)
-            {
-                obj.move_y = 1;
-                if(obj.type === 'bonus_cola')
+                console.log(entityUnder);
+                console.log(obj);
+                console.log('HELLO')
+                obj.impulse += 0.3;
+        }
+        else
+        {
+            //console.log('DAROVA')
+                //console.log(obj);
+                console.log(obj.name, obj.impulse)
+                if (obj.impulse > 0)
                 {
-
+                    obj.impulse = 0;
                 }
-            }
+                console.log('POKA')
         }
 
-        /*if(obj.impulse !== 0)
+        let multiplierY = obj.speed;
+
+        if(obj.impulse !== undefined)
         {
-            obj.move_y = 1;
-            obj.speed = obj.impulse;
-            if(obj.impulse > 0)
+            if(obj.impulse > 10)
+                obj.impulse = 10;
+
+            if(obj.impulse > 0) // move down
             {
-                obj.impulse -= 0.3;
+                multiplierY = obj.impulse;
+                obj.move_y = 1;
+                console.log(obj)
+                //obj.impulse -= 0.3;
             }
 
-            if(obj.impulse < 0)
+            if(obj.impulse < 0) // move up
             {
+                multiplierY = -obj.impulse;
+                obj.move_y = -1;
+                console.log(obj);
                 obj.impulse += 0.3;
             }
-        }*/
+        }
 
         if (obj.move_x === 0 && obj.move_y === 0)
         {
@@ -45,7 +62,7 @@ class PhysicManager
         }
 
         let newX = obj.pos_x + Math.floor(obj.move_x * obj.speed);
-        let newY = obj.pos_y + Math.floor(obj.move_y * obj.speed);
+        let newY = obj.pos_y + Math.floor(obj.move_y * multiplierY);
 
         let deltaSize_x = 0;
         let deltaSize_y = 0;
@@ -82,29 +99,29 @@ class PhysicManager
             tileset = this.gameManager.mapManager.getTilesetIdx(newX + obj.size_x-1 + deltaSize_x, newY  + deltaSize_y);
         }
 
-        console.log(obj.name)
-        console.log(`tileset forward is ${tileset} and entity forward is ${entity}`)
+        //console.log(obj.name)
+        //console.log(`tileset forward is ${tileset} and entity forward is ${entity}`)
         if(entity !== null && obj.onTouchEntity)
         {
             obj.onTouchEntity(entity);
-            console.log('entity forward')
-            console.log(entity);
+            //console.log('entity forward')
+            //console.log(entity);
         }
         if(tileset !== EMPTY_SPACE && obj.onTouchMap)
         {
-            console.log('map forward')
+            //console.log('map forward')
             obj.onTouchMap(tileset);
         }
 
         if(tileset === EMPTY_SPACE && entity === null)
         {
-            console.log('nothing forward')
-            console.log(obj)
-            console.log(`before move`)
+            //console.log('nothing forward')
+            //console.log(obj)
+            //console.log(`before move`)
             obj.pos_x = newX;
             obj.pos_y = newY;
-            console.log(obj)
-            console.log(`after move`)
+            //console.log(obj)
+            //console.log(`after move`)
         }
         else
         {
@@ -128,7 +145,7 @@ class PhysicManager
                     (x > entity.pos_x + entity.size_x) ||
                     (y > entity.pos_y + entity.size_y))
                     continue;
-                 console.log(x, y, obj.size_x, obj.size_y, entity.pos_x, entity.pos_y, entity.size_x, entity.size_y, entity.name);
+                 //console.log(x, y, obj.size_x, obj.size_y, entity.pos_x, entity.pos_y, entity.size_x, entity.size_y, entity.name);
                  return entity;
             }
         }

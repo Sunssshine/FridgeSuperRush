@@ -49,7 +49,7 @@ class EventsManager
         let willDo = self.bind[event.keyCode];
         if(willDo)
         {
-            console.log(event.keyCode + ' down ')
+            //console.log(event.keyCode + ' down ')
             self.action[willDo] = true;
         }
     }
@@ -59,7 +59,7 @@ class EventsManager
         let willDo = self.bind[event.keyCode];
         if(willDo)
         {
-            console.log(event.keyCode + ' up ')
+            //console.log(event.keyCode + ' up ')
             self.action[willDo] = false;
         }
     }

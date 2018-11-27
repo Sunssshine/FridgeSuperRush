@@ -27,11 +27,13 @@ class Player extends Entity
     size_x = 0;
     size_y = 0;
     speed = 1;
+    currentSpriteType = null;
 
     constructor(lifetime, type, name, pos_x, pos_y, gameManager)
     {
         super(type, name, pos_x, pos_y, gameManager);
         let sprite = this.gameManager.spriteManager.getSprite(this.type);
+        this.currentSpriteType = this.type;
         this.size_x = sprite.w;
         this.size_y = sprite.h;
         this.lifetime = lifetime;
@@ -40,7 +42,15 @@ class Player extends Entity
     draw()
     {
         // draw object
-        this.gameManager.spriteManager.drawSprite(this.type,
+        if(this.move_x > 0)
+        {
+            this.currentSpriteType = this.type+'_Left';
+        }
+        if(this.move_x < 0)
+        {
+            this.currentSpriteType = this.type;
+        }
+        this.gameManager.spriteManager.drawSprite(this.currentSpriteType,
             this.pos_x, this.pos_y);
     }
 
@@ -87,7 +97,7 @@ class Player extends Entity
                 fireball.pos_y = this.pos_y+fireball.size_y/2;
                 break;
             case -2:
-                console.log("WHY");
+                //console.log("WHY");
                 fireball.pos_x = this.pos_x+fireball.size_x;
                 fireball.pos_y = this.pos_y-fireball.size_y+2;
                 break;
@@ -105,9 +115,9 @@ class Player extends Entity
             {
                self.fireBlock = false;
             },
-            1500
+            500
         );
-        console.log(fireball);
+        //console.log(fireball);
         this.gameManager.entities.push(fireball);
 
     }
@@ -115,6 +125,8 @@ class Player extends Entity
 
 class Tank extends Entity
 {
+    impulse = 0;
+
     lifetime = 0;
     move_x = 0;
     move_y = 0;
@@ -215,6 +227,7 @@ class Fireball extends Entity
 
 class BonusCola extends Entity
 {
+    impulse = 0;
     speed = 1;
     move_x = 0;
     move_y = 0;
