@@ -26,7 +26,7 @@ class Player extends Entity
     move_y = 0;
     size_x = 0;
     size_y = 0;
-    speed = 1;
+    speed = 2;
     currentSpriteType = null;
 
     constructor(lifetime, type, name, pos_x, pos_y, gameManager)
@@ -67,6 +67,10 @@ class Player extends Entity
         {
             this.lifetime += 50;
             obj.kill();
+        }
+        if(obj.type === "Enemy")
+        {
+            this.kill();
         }
     }
 

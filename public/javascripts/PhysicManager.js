@@ -90,28 +90,35 @@ class PhysicManager
 
 
 
-
-        let tileset = this.gameManager.mapManager.getTilesetIdx(newX, newY);
         let entity = this.entityAtXY(obj, newX, newY);
 
-        if(tileset === this.EMPTY_SPACE)
+        let tileset = this.checkMove(obj, newX, newY);
+
+        let destTileset = tileset;
+
+        if(obj.type !== "Fireball")
         {
-            tileset = this.gameManager.mapManager.getTilesetIdx(newX + obj.size_x, newY + obj.size_y);
-            if(tileset !== this.EMPTY_SPACE && obj.type === 'Player')
-                console.log('map right')
+            if (tileset !== this.EMPTY_SPACE)
+            {
+                tileset = this.checkMove(obj, obj.pos_x, newY);
+                if (tileset !== this.EMPTY_SPACE)
+                {
+                    tileset = this.checkMove(obj, newX, obj.pos_y);
+
+                    if (tileset === this.EMPTY_SPACE)
+                    {
+                        newY = obj.pos_y;
+                    }
+                }
+                else
+                {
+                    newX = obj.pos_x;
+                }
+
+            }
         }
 
-        if(tileset === this.EMPTY_SPACE)
-        {
-            tileset = this.gameManager.mapManager.getTilesetIdx(newX, newY + obj.size_y);
-            if(tileset !== this.EMPTY_SPACE && obj.type === 'Player')
-                console.log('map left')
-        }
 
-        if(tileset === this.EMPTY_SPACE)
-        {
-            tileset = this.gameManager.mapManager.getTilesetIdx(newX + obj.size_x, newY);
-        }
 
         //console.log(obj.name)
         //console.log(`tileset forward is ${tileset} and entity forward is ${entity}`)
@@ -123,11 +130,11 @@ class PhysicManager
         }
 
 
-        if(tileset !== this.EMPTY_SPACE && obj.onTouchMap)
+        if(destTileset !== this.EMPTY_SPACE && obj.onTouchMap)
         {
             //conso
             //console.log('map forward')
-            obj.onTouchMap(tileset);
+            obj.onTouchMap(destTileset);
         }
 
         if(tileset === this.EMPTY_SPACE && entity === null)
@@ -149,6 +156,36 @@ class PhysicManager
 
     }
 
+    checkMove(obj, x, y)
+    {
+        let tileset = this.gameManager.mapManager.getTilesetIdx(x, y);
+
+
+        if(tileset === this.EMPTY_SPACE)
+        {
+            tileset = this.gameManager.mapManager.getTilesetIdx(x + obj.size_x, y + obj.size_y);
+            if(tileset !== this.EMPTY_SPACE && obj.type === 'Player')
+                console.log('map right')
+        }
+
+        if(tileset === this.EMPTY_SPACE)
+        {
+            tileset = this.gameManager.mapManager.getTilesetIdx(x, y + obj.size_y);
+            if(obj.type === 'Fireball')
+                console.log('FIREBALL HERE1')
+        }
+
+        if(tileset === this.EMPTY_SPACE)
+        {
+            tileset = this.gameManager.mapManager.getTilesetIdx(x + obj.size_x, y);
+            if(obj.type === 'Fireball')
+                console.log('FIREBALL HERE2')
+        }
+
+        return tileset;
+
+    }
+
     entityAtXY(obj, x, y)
     {
         for(let i = 0; i<this.gameManager.entities.length; i++)
@@ -157,13 +194,13 @@ class PhysicManager
 
             if(entity.name !== obj.name)
             {
-                 if((x + obj.size_x < entity.pos_x)    ||
+                if((x + obj.size_x < entity.pos_x)    ||
                     (y + obj.size_y < entity.pos_y)    ||
                     (x > entity.pos_x + entity.size_x) ||
                     (y > entity.pos_y + entity.size_y))
                     continue;
-                 //console.log(x, y, obj.size_x, obj.size_y, entity.pos_x, entity.pos_y, entity.size_x, entity.size_y, entity.name);
-                 return entity;
+                //console.log(x, y, obj.size_x, obj.size_y, entity.pos_x, entity.pos_y, entity.size_x, entity.size_y, entity.name);
+                return entity;
             }
         }
         return null;
