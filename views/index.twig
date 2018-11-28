@@ -1,15 +1,17 @@
 {% extends 'layout.twig' %}
 
 {% block body %}
-    <div id="game-info-block">
-        <div id="game-info">
+    <div id="game-block">
+        <div id="game-info-block">
+            <div id="game-info">
+            </div>
+            <div id="game-info-login"></div>
         </div>
-        <div id="game-info-login"></div>
+        <div id="hud" >
+            <span>Current score is:</span><span id="score">0</span>
+        </div>
+        <canvas id="gameCanvas" width="1200" height="768"></canvas>
     </div>
-    <div id="hud" >
-        <span>Current score is:</span><span id="score">0</span>
-    </div>
-    <canvas id="gameCanvas" width="1200" height="768"></canvas>
 
     <script src="/javascripts/GameManager.js"></script>
     <script src="/javascripts/MapManager.js"></script>
@@ -24,6 +26,7 @@
 
     <script>
 
+        //sample text
 
     </script>
 

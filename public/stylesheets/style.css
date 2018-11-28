@@ -1,6 +1,39 @@
 body {
-  padding: 10px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background-color: darkslateblue;
+}
+
+#records-table
+{
+  counter-reset: myCounter -1;
+}
+
+#records-table tr
+{
+  counter-increment: myCounter;
+}
+
+#records-table tr:before
+{
+  content: counter(myCounter);
+}
+
+#records-info
+{
+
+  font-size: xx-large;
+  width: 500px;
+  margin: auto;
+  background-color: darkorchid;
+  border: solid black;
+  text-align: center;
+}
+
+#game-block
+{
+  width: 1200px;
+  margin: auto;
+
 }
 
 #game-info-block
@@ -12,6 +45,7 @@ body {
   border-style: solid;
   height: 250px;
   background-color: darkorchid;
+  z-index: 10;
 }
 
 #game-info-login
@@ -29,7 +63,7 @@ body {
 #hud
 {
   text-align: center;
-  background-color: darkorchid;
+  background-color: steelblue;
   font-size: xx-large;
   width:1206px;
   height: 40px;

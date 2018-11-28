@@ -19,6 +19,7 @@ class GameManager
     infoElem = undefined;
     infoWindow = undefined;
     infoWindowTimeout = null;
+    score = 0;
 
     constructor(canvas, levelPaths, spritePath, spritesheetPath, scoreElem, infoElem, infoWindow)
     {
@@ -55,8 +56,8 @@ class GameManager
 
     addScore(number)
     {
-        this.player.score += number;
-        this.scoreElem.innerHTML = this.player.score;
+        this.score += number;
+        this.scoreElem.innerHTML = this.score;
     }
 
     initPlayer(obj)
@@ -86,38 +87,49 @@ class GameManager
         return resultEntity;
     }
 
-    kill(obj)
+    kill(obj, isNextLevel)
     {
         this.laterKill.push(obj);
-        if(obj.type === "Player")
+        if(obj.type === "Player" && this.playInterval !== null)
         {
-            let score = obj.score;
-            this.player = null;
-            this.scoreElem.innerHTML = "0";
+
             clearInterval(this.playInterval);
             this.playInterval = null;
-            this.showInfo(
-                `GAME OVER
-                <br />
-                YOUR SCORE:
-                <span>${score}</span>
-                <div style="font-size: large">press ENTER to restart</div>`
-            , "forever")
-            let self = this;
-            let waitForAction = setInterval(
-                function()
-                {
-                    if(self.eventsManager.action["restart"])
+            if(isNextLevel !== undefined)
+            {
+                this.addScore((this.currentLevel+1)*100);
+            }
+            else
+            {
+                let score = this.score;
+                this.player = null;
+                this.addScore(-score);
+                //this.scoreElem.innerHTML = "0";
+                this.showInfo(
+                    `GAME OVER
+                    <br />
+                    YOUR SCORE:
+                    <span>${score}</span>
+                    <div style="font-size: large">press ENTER to restart</div>`
+                , "forever")
+                let self = this;
+                let blockRestart = false;
+                let waitForAction = setInterval(
+                    function()
                     {
-                        if(self.playInterval === null)
+                        if(self.eventsManager.action["restart"] && !blockRestart)
                         {
-                            clearInterval(waitForAction);
-                            console.log('RESTART');
-                            self.currentLevel = -1;
-                            self.goToNextLevel();
+                            blockRestart = true;
+                            if(self.playInterval === null)
+                            {
+                                clearInterval(waitForAction);
+                                console.log('RESTART');
+                                self.currentLevel = -1;
+                                self.goToNextLevel();
+                            }
                         }
-                    }
-                }, 100)
+                    }, 100)
+            }
         }
     }
 
@@ -128,7 +140,7 @@ class GameManager
 
         if(this.player === null)
         {
-            alert("WTF WHERE FUCKING PLAYER))0")
+            //alert("WTF WHERE FUCKING PLAYER))0")
             return;
         }
 
@@ -207,6 +219,7 @@ class GameManager
 
     showInfo(text, timeout)
     {
+        this.canvas.style.filter = "blur(8px)";
         if(timeout === "forever")
         {
             clearTimeout(this.infoWindowTimeout);
@@ -219,6 +232,7 @@ class GameManager
         self.infoElem.innerHTML = text;
         this.infoWindowTimeout = setTimeout(function()
         {
+            self.canvas.style.filter = "";
             self.infoElem.innerHTML = "";
             self.infoWindow.style.display = "none";
         },timeout);
@@ -259,22 +273,82 @@ class GameManager
 
     goToNextLevel()
     {
+        //this.sco
         this.entities = [];
         this.player = null;
         this.currentLevel++;
         if(this.currentLevel === this.levels.length)
         {
             //
-            let kek = prompt("Введите своё имя");
-            alert(kek + " Your score is: " + this.scoreElem.innerHTML);
+            let name = prompt("Введите своё имя");
+            this.saveResult(name, this.score);
+            this.showInfo(
+                `Congratulations ${name}
+                    <br />
+                    YOUR SCORE:
+                    <span>${this.score}</span>
+                    <br />
+                    <br>
+                    <div style="font-size: large">
+                    press ENTER to restart
+                    <br />
+                    press SPACE to show table of records</div>`
+                , "forever");
+            this.currentLevel = -1;
+            let self = this;
+            let blockRestart = false;
+            let waitForAction = setInterval(
+                function()
+                {
+                    if(self.eventsManager.action["restart"] && !blockRestart)
+                    {
+                        blockRestart = true;
+                        if(self.playInterval === null)
+                        {
+                            clearInterval(waitForAction);
+                            self.addScore(-self.score);
+                            console.log('RESTART');
+                            self.currentLevel = -1;
+                            self.goToNextLevel();
+                        }
+                    }
+
+                    if(self.eventsManager.action["fire"])
+                    {
+                        window.location.href=window.location.href+'records/'
+                    }
+                }, 100);
             return;
         }
+        console.log('BYE');
+        console.log(this.currentLevel);
         this.mapManager = new MapManager(this.levels[this.currentLevel], this);
         this.mapManager.parseEntities();
-        if(this.currentLevel === 2)
+        if (this.currentLevel === 2)
         {
             this.physicManager.EMPTY_SPACE = 2960;
         }
+        else
+        {
+            this.physicManager.EMPTY_SPACE = 3079;
+        }
+        console.log(this.currentLevel);
+        console.log('HERE BEFORE PLAY')
         this.play();
+    }
+
+    saveResult(name,record)
+    {
+        let self = this;
+        let request = new XMLHttpRequest();
+        request.onreadystatechange = function()
+        {
+            if(request.readyState === 4 && request.status === 200)
+            {
+
+            }
+        };
+        request.open("PUT", `/?name=${name}&record=${record}`, true);
+        request.send();
     }
 }

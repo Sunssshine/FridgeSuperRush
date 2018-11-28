@@ -87,28 +87,31 @@ class Player extends Entity
         {
             // END LEVEL
             // TOGGLE NEXT LEVEL
+            this.kill(true);
             this.gameManager.goToNextLevel();
-            this.kill();
         }
 
         if(tileset === 2824)
         {
             // END LEVEL
             // TOGGLE NEXT LEVEL
+            this.kill(true);
             this.gameManager.goToNextLevel();
-            this.kill();
         }
         if(tileset === 3263)
         {
+            this.kill(true);
             this.gameManager.goToNextLevel();
-            this.kill();
         }
     }
 
-    kill()
+    kill(goNextLevel)
     {
-        // destroy this
-        this.gameManager.kill(this);
+        // destroy this]
+        if(goNextLevel !== undefined)
+            this.gameManager.kill(this, goNextLevel);
+        else
+            this.gameManager.kill(this);
     }
 
     fire()
