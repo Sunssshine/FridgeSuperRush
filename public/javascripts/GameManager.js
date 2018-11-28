@@ -92,6 +92,7 @@ class GameManager
         {
             let score = obj.score;
             this.player = null;
+            this.scoreElem.innerHTML = "0";
             clearInterval(this.playInterval);
             this.playInterval = null;
             this.showInfo(
@@ -139,7 +140,7 @@ class GameManager
             if (this.player.impulse === 0)
             {
                 //console.log('HEREHEREHEREHERE')
-                this.player.impulse = -20;
+                this.player.impulse = -15;
             }
         }
 
@@ -234,7 +235,12 @@ class GameManager
                    self.spriteManager.jsonLoaded &&
                    self.spriteManager.imgLoaded)
                 {
-                    self.showInfo(`Welcome to level ${self.currentLevel+1}`, 2000);
+                    self.showInfo(
+                        `Welcome to level ${self.currentLevel+1}
+                        <br />
+                        <br />
+                        <div style="font-size: large">Here can be level description but... As you can see.. Spooky monsters has stole it, sorry *~*</div>`
+                        , 2000);
                     self.playInterval = setInterval(function()
                     {
                         self.update();
