@@ -12,6 +12,7 @@ class EventsManager
         this.bind[65]='left';
         this.bind[68]='right';
         this.bind[32]='fire';
+        this.bind[13]='restart';
 
         let self = this;
 

@@ -28,6 +28,7 @@ class Player extends Entity
     size_y = 0;
     speed = 2;
     currentSpriteType = null;
+    score = 0;
 
     constructor(lifetime, type, name, pos_x, pos_y, gameManager)
     {
@@ -65,7 +66,7 @@ class Player extends Entity
         // collide entities handle
         if(obj.type === "BonusCola")
         {
-            this.lifetime += 50;
+            this.gameManager.addScore(50);
             obj.kill();
         }
         if(obj.type === "Enemy")
@@ -236,6 +237,7 @@ class Fireball extends Entity
            obj.type === "Player"||
            obj.type === "Fireball")
         {
+            this.gameManager.addScore(25);
             obj.kill();
         }
         this.kill();

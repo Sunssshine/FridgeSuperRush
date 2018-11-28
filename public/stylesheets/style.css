@@ -3,6 +3,43 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+#game-info-block
+{
+  margin-top: 300px;
+  margin-left: 400px;
+  position: absolute;
+  width:400px;
+  border-style: solid;
+  height: 250px;
+  background-color: darkorchid;
+}
+
+#game-info-login
+{
+  display:none;
+}
+
+#game-info
+{
+  margin-top: 20%;
+  text-align: center;
+  font-size: xx-large;
+}
+
+#hud
+{
+  text-align: center;
+  background-color: darkorchid;
+  font-size: xx-large;
+  width:1206px;
+  height: 40px;
+}
+
+#gameCanvas
+{
+  border-style: solid;
+}
+
 a {
   color: #00B7FF;
 }

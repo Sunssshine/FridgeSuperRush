@@ -95,7 +95,7 @@ class MapManager
                     }
                 }
             }
-            ctx.clearRect(0,0,900,900);
+            //ctx.clearRect(0,0,900,900);
             for(let i = 0; i<this.tLayer.data.length; i++)
             {
                 if(this.tLayer.data[i] !== 0)

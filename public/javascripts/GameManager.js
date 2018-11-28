@@ -14,11 +14,19 @@ class GameManager
 
     currentLevel = 0;
     levels = [];
+    playInterval = null;
+    scoreElem = undefined;
+    infoElem = undefined;
+    infoWindow = undefined;
 
-    constructor(canvas, levelPaths, spritePath, spritesheetPath)
+    constructor(canvas, levelPaths, spritePath, spritesheetPath, scoreElem, infoElem, infoWindow)
     {
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
+        this.scoreElem = scoreElem;
+        this.infoElem = infoElem;
+        this.infoWindow = infoWindow;
+        console.log(this.infoElem);
 
         for(let i = 0; i<levelPaths.length; i++)
         {
@@ -40,21 +48,14 @@ class GameManager
 
         this.play();
 
-        let self = this;
 
 
-        //tests with start
-        setInterval(
-            function()
-            {
-                //console.log(self.entities);
-                // console.log(self.mapManager.getTilesetIdx(63,63));
-                // console.log(self.mapManager.getTilesetIdx(63,64));
-                // console.log(self.mapManager.getTilesetIdx(64,63));
-                // console.log(self.mapManager.getTilesetIdx(64,64));
-            },
-        100);
+    }
 
+    addScore(number)
+    {
+        this.player.score += number;
+        this.scoreElem.innerHTML = this.player.score;
     }
 
     initPlayer(obj)
@@ -87,14 +88,45 @@ class GameManager
     kill(obj)
     {
         this.laterKill.push(obj);
+        if(obj.type === "Player")
+        {
+            let score = obj.score;
+            this.player = null;
+            clearInterval(this.playInterval);
+            this.playInterval = null;
+            this.showInfo(
+                `GAME OVER
+                <br />
+                YOUR SCORE:
+                <span>${score}</span>
+                <div style="font-size: large">press ENTER to restart</div>`
+            , "forever")
+            let self = this;
+            let waitForAction = setInterval(
+                function()
+                {
+                    if(self.eventsManager.action["restart"])
+                    {
+                        if(self.playInterval === null)
+                        {
+                            clearInterval(waitForAction);
+                            console.log('RESTART');
+                            self.currentLevel = -1;
+                            self.goToNextLevel();
+                        }
+                    }
+                }, 100)
+        }
     }
 
     update()
     {
         // console.log(this.entities)
 
+
         if(this.player === null)
         {
+            alert("WTF WHERE FUCKING PLAYER))0")
             return;
         }
 
@@ -122,6 +154,7 @@ class GameManager
 
         if(this.eventsManager.action["fire"])
             this.player.fire();
+
 
         //console.log(this.entities);
 
@@ -170,13 +203,50 @@ class GameManager
         }
     }
 
+    showInfo(text, timeout)
+    {
+        if(timeout === "forever")
+        {
+            this.infoWindow.style.display = "block";
+            this.infoElem.innerHTML = text;
+            return
+        }
+        let self = this;
+        self.infoWindow.style.display = "block";
+        self.infoElem.innerHTML = text;
+        setTimeout(function()
+        {
+            self.infoElem.innerHTML = "";
+            self.infoWindow.style.display = "none";
+        },timeout);
+    }
+
     play()
     {
         let self = this;
-        setInterval(function()
-        {
-            self.update();
-        },10);
+
+        //tests with start
+        let tryStart = setInterval(
+            function()
+            {
+                if(self.mapManager.jsonLoaded &&
+                   self.mapManager.imgLoaded &&
+                   self.spriteManager.jsonLoaded &&
+                   self.spriteManager.imgLoaded)
+                {
+                    self.showInfo(`Welcome to level ${self.currentLevel+1}`, 2000);
+                    self.playInterval = setInterval(function()
+                    {
+                        self.update();
+                    },10);
+                    clearInterval(tryStart);
+                }
+                //console.log(self.entities);
+                // console.log(self.mapManager.getTilesetIdx(63,63));
+                // console.log(self.mapManager.getTilesetIdx(63,64));
+                // console.log(self.mapManager.getTilesetIdx(64,63));
+                // console.log(self.mapManager.getTilesetIdx(64,64));
+            }, 100);
     }
 
     goToNextLevel()
@@ -192,5 +262,6 @@ class GameManager
         {
             this.physicManager.EMPTY_SPACE = 2960;
         }
+        this.play();
     }
 }
