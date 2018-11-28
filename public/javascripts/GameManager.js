@@ -18,6 +18,7 @@ class GameManager
     scoreElem = undefined;
     infoElem = undefined;
     infoWindow = undefined;
+    infoWindowTimeout = null;
 
     constructor(canvas, levelPaths, spritePath, spritesheetPath, scoreElem, infoElem, infoWindow)
     {
@@ -208,6 +209,7 @@ class GameManager
     {
         if(timeout === "forever")
         {
+            clearTimeout(this.infoWindowTimeout);
             this.infoWindow.style.display = "block";
             this.infoElem.innerHTML = text;
             return
@@ -215,7 +217,7 @@ class GameManager
         let self = this;
         self.infoWindow.style.display = "block";
         self.infoElem.innerHTML = text;
-        setTimeout(function()
+        this.infoWindowTimeout = setTimeout(function()
         {
             self.infoElem.innerHTML = "";
             self.infoWindow.style.display = "none";
@@ -261,7 +263,12 @@ class GameManager
         this.player = null;
         this.currentLevel++;
         if(this.currentLevel === this.levels.length)
+        {
+            //
+            let kek = prompt("Введите своё имя");
+            alert(kek + " Your score is: " + this.scoreElem.innerHTML);
             return;
+        }
         this.mapManager = new MapManager(this.levels[this.currentLevel], this);
         this.mapManager.parseEntities();
         if(this.currentLevel === 2)

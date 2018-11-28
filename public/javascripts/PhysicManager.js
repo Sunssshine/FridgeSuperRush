@@ -19,6 +19,8 @@ class PhysicManager
         {
             if((obj.type !== "Fireball") && (!entityUnder))
                 obj.impulse += 0.3;
+
+
         }
         else
         {
@@ -28,10 +30,20 @@ class PhysicManager
                 {
                     //console.log('not fireball')
                     obj.onTouchMap(isInAirLeft);
+
+                }
+
+            }
+            else
+            {
+                if(obj.type === 'Enemy')
+                {
+                    obj.rotate();
                 }
             }
             if (obj.impulse !== undefined && obj.impulse > 0)
             {
+
 
                 obj.impulse = 0;
             }
@@ -108,14 +120,25 @@ class PhysicManager
                     if (tileset === this.EMPTY_SPACE)
                     {
                         newY = obj.pos_y;
+
+                    }
+                    else
+                    {
+
                     }
                 }
                 else
                 {
+                    if(obj.type === 'Enemy')
+                    {
+                        obj.rotate();
+                        console.log('hello1')
+                    }
                     newX = obj.pos_x;
                 }
 
             }
+
         }
 
 

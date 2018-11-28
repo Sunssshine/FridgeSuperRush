@@ -88,7 +88,7 @@ class Player extends Entity
             // END LEVEL
             // TOGGLE NEXT LEVEL
             this.gameManager.goToNextLevel();
-            this.kill()
+            this.kill();
         }
 
         if(tileset === 2824)
@@ -96,7 +96,12 @@ class Player extends Entity
             // END LEVEL
             // TOGGLE NEXT LEVEL
             this.gameManager.goToNextLevel();
-            this.kill()
+            this.kill();
+        }
+        if(tileset === 3263)
+        {
+            this.gameManager.goToNextLevel();
+            this.kill();
         }
     }
 
@@ -158,7 +163,7 @@ class Tank extends Entity
     impulse = 0;
 
     lifetime = 0;
-    move_x = 0;
+    move_x = 1;
     move_y = 0;
     speed = 1;
 
@@ -169,13 +174,33 @@ class Tank extends Entity
         this.size_x = sprite.w;
         this.size_y = sprite.h;
         this.lifetime = lifetime;
+        this.currentSpriteType = this.type;
+
     }
 
     draw()
     {
         // draw object
-        this.gameManager.spriteManager.drawSprite(this.type,
+
+        this.gameManager.spriteManager.drawSprite(this.currentSpriteType,
             this.pos_x, this.pos_y);
+    }
+
+    onTouchMap()
+    {
+        this.move_x = this.move_x * -1;
+    }
+
+    rotate()
+    {
+        if(this.currentSpriteType === this.type)
+        {
+            this.currentSpriteType = this.type+'_Right';
+        }
+        else
+        {
+            this.currentSpriteType = this.type;
+        }
     }
 
     update()
@@ -187,6 +212,14 @@ class Tank extends Entity
     onTouchEntity(obj)
     {
         // collide entities handle
+        if(obj.type === "Player")
+        {
+            obj.kill();
+        }
+        else
+        {
+            this.move_x = this.move_x * -1;
+        }
     }
 
     kill()
@@ -206,6 +239,8 @@ class Fireball extends Entity
     move_x = 0;
     move_y = 0;
     speed = 4;
+    rotateInterval = null;
+    spriteType = null;
 
     constructor(name, type, move_x, move_y, pos_x, pos_y, gameManager)
     {
@@ -215,13 +250,33 @@ class Fireball extends Entity
         this.size_y = sprite.h;
         this.move_x = move_x;
         this.move_y = move_y;
+        this.spriteType = this.type;
+        let self = this;
+        let spriteCounter = 0;
+        this.rotateInterval = setInterval(
+            function()
+            {
+                spriteCounter++;
+                if(spriteCounter === 0)
+                {
+                    self.spriteType = "Fireball";
+                }
+                else
+                {
+                    self.spriteType = `Fireball_${spriteCounter}`
+                }
+                if(spriteCounter === 3)
+                {
+                    spriteCounter = 0;
+                }
+            }, 100)
     }
 
     draw()
     {
         // draw object
 
-        this.gameManager.spriteManager.drawSprite(this.type,
+        this.gameManager.spriteManager.drawSprite(this.spriteType,
             this.pos_x, this.pos_y);
     }
 
