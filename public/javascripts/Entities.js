@@ -66,6 +66,7 @@ class Player extends Entity
         // collide entities handle
         if(obj.type === "BonusCola")
         {
+            this.gameManager.soundsManager.playSound("bonus");
             this.gameManager.addScore(50);
             obj.kill();
         }
@@ -109,9 +110,15 @@ class Player extends Entity
     {
         // destroy this]
         if(goNextLevel !== undefined)
+        {
             this.gameManager.kill(this, goNextLevel);
+            this.gameManager.soundsManager.playSound("next level");
+        }
         else
+        {
+            this.gameManager.soundsManager.playSound("hero death");
             this.gameManager.kill(this);
+        }
     }
 
     fire()
@@ -121,7 +128,7 @@ class Player extends Entity
             return;
 
         let fireballMove_x = this.move_x;
-        let fireballMove_y = this.move_y;
+        let fireballMove_y = this.move_y; // TODO delete extra cases
         let fireballName = "fireball" + (++this.gameManager.fireNum);
         let fireball = new Fireball("Fireball", fireballName, fireballMove_x, fireballMove_y, 0, 0, this.gameManager);
         switch(this.move_x + 2*this.move_y)
@@ -129,10 +136,12 @@ class Player extends Entity
             case -1:
                 fireball.pos_x = this.pos_x-fireball.size_x;
                 fireball.pos_y = this.pos_y+fireball.size_y/2;
+                this.gameManager.soundsManager.playSound("pew");
                 break;
             case 1:
                 fireball.pos_x = this.pos_x+this.size_x;
                 fireball.pos_y = this.pos_y+fireball.size_y/2;
+                this.gameManager.soundsManager.playSound("pew");
                 break;
             case -2:
                 //console.log("WHY");
@@ -228,6 +237,7 @@ class Tank extends Entity
     kill()
     {
         // destroy this
+        this.gameManager.soundsManager.playSound("enemy death");
         this.gameManager.kill(this);
     }
 

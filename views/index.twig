@@ -2,6 +2,22 @@
 
 {% block body %}
     <div id="game-block">
+        <div id="interact-with-page">
+            <div id="logo-block">
+                <div>
+                    SUPER FRIDGE RUSH
+                </div>
+                <div>
+                    <img src="images/fridge_logo.png" width="200" height="400">
+                </div>
+                <div>
+                    <button style="background-color: red; border: solid black; font-size: xx-large; font-weight: 500;" onclick="startGame();">
+                        Play
+                    </button>
+                </div>
+
+            </div>
+        </div>
         <div id="game-info-block">
             <div id="game-info">
             </div>
@@ -13,6 +29,7 @@
         <canvas id="gameCanvas" width="1200" height="768"></canvas>
     </div>
 
+    <script src="/javascripts/SoundsManager.js"></script>
     <script src="/javascripts/GameManager.js"></script>
     <script src="/javascripts/MapManager.js"></script>
     <script src="/javascripts/PhysicManager.js"></script>

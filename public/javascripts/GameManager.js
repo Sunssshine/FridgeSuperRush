@@ -8,6 +8,7 @@ class GameManager
     spriteManager = null;
     eventsManager = null;
     physicManager = null;
+    soundsManager = null;
     mapManager = null;
     canvas = null;
     ctx = null;
@@ -19,15 +20,17 @@ class GameManager
     infoElem = undefined;
     infoWindow = undefined;
     infoWindowTimeout = null;
+
     score = 0;
 
-    constructor(canvas, levelPaths, spritePath, spritesheetPath, scoreElem, infoElem, infoWindow)
+    constructor(canvas, levelPaths, spritePath, spritesheetPath, scoreElem, infoElem, infoWindow, hideThisAfterLoad)
     {
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
         this.scoreElem = scoreElem;
         this.infoElem = infoElem;
         this.infoWindow = infoWindow;
+
         console.log(this.infoElem);
 
         for(let i = 0; i<levelPaths.length; i++)
@@ -35,11 +38,21 @@ class GameManager
             this.levels.push(levelPaths[i]);
         }
 
+        this.soundsManager = new SoundsManager(this);
         this.mapManager = new MapManager(this.levels[this.currentLevel], this);
         this.spriteManager = new SpriteManager(spritePath, spritesheetPath, this);
         this.mapManager.parseEntities();
         this.eventsManager = new EventsManager(canvas, this);
         this.physicManager = new PhysicManager(this, 3079);
+
+        setTimeout(
+            function ()
+            {
+                hideThisAfterLoad.style.display = "none";
+            }
+        , 200);
+
+
 
         // this.factory['Player'] = new Player(100, 10, 10,  this);
         // this.factory['Tank'] = new Tank(100, 10, 10,  this);

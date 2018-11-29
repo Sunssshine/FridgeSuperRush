@@ -3,9 +3,27 @@ body {
   background-color: darkslateblue;
 }
 
+#interact-with-page
+{
+  width: 1208px;
+  height: 808px;
+  background-color: darkcyan;
+  z-index: 15;
+  position: absolute;
+  border: black solid;
+}
+
 #records-table
 {
   counter-reset: myCounter -1;
+}
+
+#logo-block
+{
+  margin-top: 10%;
+  font-size: xx-large;
+  text-align: center;
+  margin-left: auto;
 }
 
 #records-table tr
