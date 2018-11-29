@@ -2,7 +2,7 @@
 
 {% block body %}
     <div id="records-info">
-        <table id="records-table"   >
+        <table id="records-table">
             <tr>
                 <th id="hideMe"></th><th width="250">ИМЯ</th><th width="250">РЕКОРД</th>
             </tr>
@@ -12,6 +12,9 @@
             </tr>
             {% endfor %}
         </table>
+        <button style="background-color: red; border: solid black; font-size: xx-large; font-weight: 500; margin: auto" onclick="window.location.href = '/'">
+            К ИГРЕ
+        </button>
     </div>
 
     <script>
