@@ -268,7 +268,7 @@ class GameManager
                         `Welcome to level ${self.currentLevel+1}
                         <br />
                         <br />
-                        <div style="font-size: large">Here can be level description but... As you can see.. Spooky monsters has stole it, sorry *~*</div>`
+                        <div style="font-size: large">Here can be level description but... As you can see.. Spooky monsters have stole it, sorry *~*</div>`
                         , 2000);
                     self.playInterval = setInterval(function()
                     {
@@ -300,8 +300,6 @@ class GameManager
                     <br />
                     YOUR SCORE:
                     <span>${this.score}</span>
-                    <br />
-                    <br>
                     <div style="font-size: large">
                     press ENTER to restart
                     <br />

@@ -26,28 +26,34 @@ class SoundsManager
         switch(name)
         {
             case "pew":
-                this.pewPewSound.currentTime = 0;
+                this.pewPewSound.currentTime = 0.12;
+                this.pewPewSound.volume = 0.5;
                 this.pewPewSound.play();
                 break;
 
             case "hero death":
                 this.heroDeathSound.currentTime = 0;
+                this.heroDeathSound.volume = 0.5;
                 this.heroDeathSound.play();
                 break;
 
             case "enemy death":
-                this.enemyDeathSound.currentTime = 0.2;
+                this.enemyDeathSound.currentTime = 0.4;
+                this.enemyDeathSound.volume = 1;
                 this.enemyDeathSound.play();
                 break;
 
             case "next level":
                 this.nextLevelSound.currentTime = 0;
+                this.nextLevelSound.volume = 0.3;
                 this.nextLevelSound.play();
                 break;
 
             case "bonus":
                 this.bonusSound.currentTime = 0;
+                this.bonusSound.volume = 0.5;
                 this.bonusSound.play();
+                break;
 
             default:
                 break;
@@ -59,6 +65,7 @@ class SoundsManager
         if(this.themeSound.paused)
         {
             this.themeSound.loop = true;
+            //this.themeSound.currentTime = 0.3;
             this.themeSound.play();
         }
         else
