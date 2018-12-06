@@ -254,7 +254,20 @@ class GameManager
     play()
     {
         let self = this;
+        let description = "Here can be level description but... As you can see.. Spooky monsters have stole it, sorry *~*";
+        switch(this.currentLevel)
+        {
+            case 0:
+                description = 'Use A and D to move, W to jump, and SPACE when you move to do fireball shot. Good Luck!';
+                break;
+            case 1:
+                description = 'Careful, he is right in front of you! If u read this now, you are still alive, lucky :)';
+                break;
+            case 2:
+                description = 'That was amazing! Thank you for you skill! Just wait and you will get easter egg ._.'
+                break;
 
+        }
         //tests with start
         let tryStart = setInterval(
             function()
@@ -268,7 +281,7 @@ class GameManager
                         `Welcome to level ${self.currentLevel+1}
                         <br />
                         <br />
-                        <div style="font-size: large">Here can be level description but... As you can see.. Spooky monsters have stole it, sorry *~*</div>`
+                        <div style="font-size: large">${description}</div>`
                         , 2000);
                     self.playInterval = setInterval(function()
                     {
